@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <psapi.h>
 #include <tuple>
 
@@ -30,7 +31,6 @@ float fVideoUVScale = 0.0015625f;
 
 // Field Radar & UI Globals
 float fRadarAnchorX = 486.0f;
-float fRadarFinalX = 344.0f;
 void* GetElement_Original = nullptr;
 
 DWORD jmpBack_2D_Unified = 0;
@@ -64,9 +64,6 @@ void* __cdecl Hook_GetElement_Global(int screenID, int elementID) {
         if (elementID == 50) { // Anchor
             *pX = fRadarAnchorX;
         }
-        else if (elementID == 720) { // Radar 
-            *pX = fRadarFinalX;
-        }
 
         else if ((elementID >= 1000 && elementID <= 1005) ||
             elementID == 30 || elementID == 70 || elementID == 330) {
@@ -87,6 +84,30 @@ void* __cdecl Hook_GetElement_Global(int screenID, int elementID) {
     return pElement;
 }
 
+void InitLogger()
+{
+    // Create a file logger named "file_logger" that writes to "Cricket07WidescreenFix.log"
+    // "true" means truncate (overwrite) the file every time you restart the game.
+    // Use "false" if you want to append to the existing file.
+    auto logger = spdlog::basic_logger_mt("file_logger", "Cricket07WidescreenFix.log", true);
+
+    // Set the format: [Time] [Level] Message
+    logger->set_pattern("[%H:%M:%S] [%^%l%$] %v");
+
+    // Set this new logger as the "Default"
+    // This makes 'spdlog::info' uses this file automatically.
+    spdlog::set_default_logger(logger);
+
+    // Optional: Set log level (info, debug, trace)
+    spdlog::set_level(spdlog::level::info);
+
+    // CRITICAL: Force flush on every log. 
+    // If the game crashes, this ensures the last log line is actually saved to the file.
+    spdlog::flush_on(spdlog::level::info);
+
+    spdlog::info("Logger Initialized Successfully.");
+}
+
 void Init()
 {
     // Resolution & Aspect Ratio Detection
@@ -97,7 +118,13 @@ void Init()
     if (!ResX || !ResY)
         std::tie(ResX, ResY) = GetDesktopRes();
 
-    float aspectRatio = (float)ResX / (float)ResY;
+    float fResX = (float)ResX;
+    float fResY = (float)ResY;
+
+    float aspectRatio = fResX / fResY;
+
+    spdlog::info("Widescreen Fix Init: {:.2f} ({}x{})", aspectRatio, ResX, ResY);
+
 
     // Standard (4:3) Fallback
     if (aspectRatio <= 1.334f) {
@@ -105,9 +132,14 @@ void Init()
         return;
     }
 
-    // Calculate Widescreen Values
+    MODULEINFO modInfo = { 0 };
+    GetModuleInformation(GetCurrentProcess(), GetModuleHandle(NULL), &modInfo, sizeof(MODULEINFO));
+    uintptr_t start = (uintptr_t)modInfo.lpBaseOfDll;
+    uintptr_t end = start + modInfo.SizeOfImage;
 
-    // Main HUD (Centers 4:3 content)
+// CALCULATE VALUES AS PER RESOLUTION
+
+    // Main HUD
     fNewHUDWidth = 480.0f * aspectRatio;
     fHUDOffsetX = (640.0f - fNewHUDWidth) / 2.0f;
     fNewAspect = aspectRatio;
@@ -116,27 +148,33 @@ void Init()
     fVideoQuadWidth = fNewHUDWidth;
     fVideoUVScale = fNewHUDWidth / 409920.00f;
 
-    // Radar Logic (Push to Right Edge)
+    float fPiPCam = fHUDOffsetX + 45.0f;
+    float fPiPFrame = fHUDOffsetX + 26.0f;
+
+    // Throw Meter
+    static float fThrowMeter = 25.0f;
+    fThrowMeter = 25.0f + fHUDOffsetX;
+
+    // Field Radar
     float fRadarShift = fHUDOffsetX * -1.0f;
     fRadarAnchorX = 486.0f + fRadarShift;
-    fRadarFinalX = 344.0f + fRadarShift;
+    spdlog::info("Radar Fix: Anchor(50) -> {:.2f}", fRadarAnchorX);
 
-    MODULEINFO modInfo = { 0 };
-    GetModuleInformation(GetCurrentProcess(), GetModuleHandle(NULL), &modInfo, sizeof(MODULEINFO));
-    uintptr_t start = (uintptr_t)modInfo.lpBaseOfDll;
-    uintptr_t end = start + modInfo.SizeOfImage;
-
-    spdlog::info("Widescreen Fix Init: {:.2f} ({}x{})", aspectRatio, ResX, ResY);
-    spdlog::info("Radar Fix: Anchor(50) -> {:.2f}, Radar(720) -> {:.2f}", fRadarAnchorX, fRadarFinalX);
-
-    // APPLY PATCHES
+ // APPLY PATCHES
 
     // 3D Aspect Ratio
     auto pattern_ar = hook::pattern("C7 44 24 6C AB AA AA 3F");
     if (!pattern_ar.empty()) {
-        uintptr_t address_of_float = (uintptr_t)pattern_ar.get_first(4);
-        injector::WriteMemory(address_of_float, fNewAspect, true);
-        spdlog::info("Patched 3D Aspect Ratio");
+        uintptr_t addr_ar1 = (uintptr_t)pattern_ar.get_first(4);
+        injector::WriteMemory(addr_ar1, fNewAspect, true);
+        spdlog::info("Patched 1st address of Aspect Ratio");
+    }
+
+    auto pattern_ar_1 = hook::pattern("C7 41 0C AB AA AA 3F");
+    if (!pattern_ar_1.empty()) {
+        uintptr_t addr_ar2 = (uintptr_t)pattern_ar_1.get_first(3);
+        injector::WriteMemory(addr_ar2, fNewAspect, true);
+        spdlog::info("Patched 2nd address of Aspect Ratio");
     }
 
     // Mouse Limits
@@ -159,9 +197,6 @@ void Init()
         uintptr_t addrCam = (uintptr_t)pattern_pip_cam.get_first(1);
         uintptr_t addrFrame = (uintptr_t)pattern_pip_frame.get_first(1);
 
-        float fPiPCam = fHUDOffsetX + 45.0f;
-        float fPiPFrame = fHUDOffsetX + 26.0f;
-
         injector::WriteMemory<float>(addrCam, fPiPCam, true);
         injector::WriteMemory<float>(addrFrame, fPiPFrame, true);
         spdlog::info("Patched PiP Frame & Camera");
@@ -175,6 +210,21 @@ void Init()
             injector::WriteMemory<float>(addr_text, fCorrectedPiPText, true);
             spdlog::info("Patched PiP Text");
         }
+    }
+
+    // Throw Meter
+
+    auto pattern_field_circle = hook::pattern("D8 05 ? ? ? ? 83 C4 08 D9 5F 08 D9 44");
+
+    if (!pattern_field_circle.empty()) {
+        uintptr_t instruction_operand = (uintptr_t)pattern_field_circle.get_first(2);
+
+        injector::WriteMemory(instruction_operand, &fThrowMeter, true);
+
+        spdlog::info("Patched throw meter position. Value: {:.2f}", fThrowMeter);
+    }
+    else {
+        spdlog::error("Throw meter x-pos not found!");
     }
 
     // Video Scaler
@@ -214,16 +264,11 @@ void Init()
 
     // Other overlay resolutions
 
-    float fResX = (float)ResX;
-    float fResY = (float)ResY;
-
-
     auto p_load_a = hook::pattern("C7 44 24 1C 00 00 20 44");
     if (!p_load_a.empty())
     {
         uintptr_t addr = (uintptr_t)p_load_a.get_first(0);
         injector::WriteMemory<float>(addr + 4, fResX, true);
-
 
         injector::WriteMemory<float>(addr + 8 + 4, fResY, true);
 
@@ -247,9 +292,7 @@ void Init()
     {
         uintptr_t addr = (uintptr_t)p_overlay.get_first(0);
 
-
         injector::WriteMemory<float>(addr + 3, fResY, true);
-
 
         injector::WriteMemory<float>(addr + 8, fResX, true);
 
@@ -288,7 +331,7 @@ void Init()
         spdlog::error("Field Radar Pattern not found!");
     }
 
-    //Resolution Hack
+    // Resolution Hack
     auto p1 = hook::pattern("81 F9 80 02 00 00 8B B7 08 03 00 00 75 0D");
     if (!p1.empty())
     {
@@ -329,12 +372,31 @@ void Init()
 
         spdlog::info("Bucket skip disabled");
     }
+
+    // Override Default Resolution 
+
+    auto pattern_res_force = hook::pattern("BF 80 02 00 00 89 78 30");
+
+    if (!pattern_res_force.empty()) {
+        uintptr_t addr = (uintptr_t)pattern_res_force.get_first(0);
+
+        injector::WriteMemory<int>(addr + 1, ResX, true);
+
+        injector::WriteMemory<int>(addr + 14, ResY, true);
+
+        spdlog::info("Patched Internal Res Force at {:X} -> {}x{}", addr, ResX, ResY);
+    }
+    else {
+        spdlog::error("Internal Resolution Pattern not found!");
+    }
 }
 
 BOOL APIENTRY DllMain(HMODULE /*hModule*/, DWORD reason, LPVOID /*lpReserved*/)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {
+        
+        InitLogger();
         Init();
     }
     return TRUE;
