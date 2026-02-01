@@ -86,23 +86,15 @@ void* __cdecl Hook_GetElement_Global(int screenID, int elementID) {
 
 void InitLogger()
 {
-    // Create a file logger named "file_logger" that writes to "Cricket07WidescreenFix.log"
-    // "true" means truncate (overwrite) the file every time you restart the game.
-    // Use "false" if you want to append to the existing file.
+    // Create a file logger that writes to "Cricket07WidescreenFix.log"
     auto logger = spdlog::basic_logger_mt("file_logger", "Cricket07WidescreenFix.log", true);
 
-    // Set the format: [Time] [Level] Message
     logger->set_pattern("[%H:%M:%S] [%^%l%$] %v");
 
-    // Set this new logger as the "Default"
-    // This makes 'spdlog::info' uses this file automatically.
     spdlog::set_default_logger(logger);
 
-    // Optional: Set log level (info, debug, trace)
     spdlog::set_level(spdlog::level::info);
 
-    // CRITICAL: Force flush on every log. 
-    // If the game crashes, this ensures the last log line is actually saved to the file.
     spdlog::flush_on(spdlog::level::info);
 
     spdlog::info("Logger Initialized Successfully.");
@@ -127,7 +119,7 @@ void Init()
 
 
     // Standard (4:3) Fallback
-    if (aspectRatio <= 1.334f) {
+    if (aspectRatio < 1.334f) {
         spdlog::info("Standard 4:3 detected. Skipping patches.");
         return;
     }
@@ -137,9 +129,9 @@ void Init()
     uintptr_t start = (uintptr_t)modInfo.lpBaseOfDll;
     uintptr_t end = start + modInfo.SizeOfImage;
 
-// CALCULATE VALUES AS PER RESOLUTION
+    // CALCULATE VALUES AS PER RESOLUTION
 
-    // Main HUD
+        // Main HUD
     fNewHUDWidth = 480.0f * aspectRatio;
     fHUDOffsetX = (640.0f - fNewHUDWidth) / 2.0f;
     fNewAspect = aspectRatio;
@@ -160,9 +152,9 @@ void Init()
     fRadarAnchorX = 486.0f + fRadarShift;
     spdlog::info("Radar Fix: Anchor(50) -> {:.2f}", fRadarAnchorX);
 
- // APPLY PATCHES
+    // APPLY PATCHES
 
-    // 3D Aspect Ratio
+       // 3D Aspect Ratio
     auto pattern_ar = hook::pattern("C7 44 24 6C AB AA AA 3F");
     if (!pattern_ar.empty()) {
         uintptr_t addr_ar1 = (uintptr_t)pattern_ar.get_first(4);
@@ -395,7 +387,7 @@ BOOL APIENTRY DllMain(HMODULE /*hModule*/, DWORD reason, LPVOID /*lpReserved*/)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {
-        
+
         InitLogger();
         Init();
     }
