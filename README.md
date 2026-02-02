@@ -1,6 +1,7 @@
 # EA Cricket Widescreen Fix
 Widescreen and resolution support for EA Cricket games on PC.
 ## EA Cricket 2007
+### <a href="https://github.com/retrobone/EACricketWidescreenFix/releases/tag/cricket-07">Download</a><br>
 https://www.youtube.com/watch?v=vx2ewhMd8_U<br>
 <img width="40%" src="https://github.com/retrobone/Cricket07WidescreenHUDFix/assets/93852813/4c1a232a-c976-4685-87a6-1a99f423aed4"/>
 <img width="40%" src="https://github.com/retrobone/Cricket07WidescreenHUDFix/assets/93852813/28dc78f5-420a-4efd-8173-7bc164db5cbc"/>
