@@ -15,15 +15,12 @@ using namespace injector;
 
 // GLOBAL VARIABLES
 
-// HUD & Aspect Ratio
-float fNewHUDWidth = 853.33333f;
-float fHUDOffsetX = -106.66666f;
-float fNewAspect = 1.7777777f;
-int   iNewHUDWidthInt = 853;
+// HUD & Aspect Ratio Variables
+float fHUDWidth = 640.0f;
+float fHUDHeight = 480.0f;
+float fHUDOffsetX = 0.0f;
+float fAspectRatio = 1.3333333f;
 
-// Mouse Limits
-float fMouseLimitX = 853.33333f;
-float fMouseLimitY = 480.0f;
 
 // Video Logic
 float fVideoQuadWidth = 640.00f;
@@ -40,7 +37,7 @@ DWORD jmpBack_2D_Unified = 0;
 // Unified 2D HUD Hook
 void __declspec(naked) Hook_HUD_Unified() {
     __asm {
-        push[fNewHUDWidth]      // Width
+        push[fHUDWidth]      // Width
         push 0                  // Y Offset
         push[fHUDOffsetX]       // X Offset
 
@@ -131,15 +128,14 @@ void Init()
 
     // CALCULATE VALUES AS PER RESOLUTION
 
-        // Main HUD
-    fNewHUDWidth = 480.0f * aspectRatio;
-    fHUDOffsetX = (640.0f - fNewHUDWidth) / 2.0f;
-    fNewAspect = aspectRatio;
+    // Main HUD
+    fHUDWidth = 480.0f * aspectRatio;
+    fHUDOffsetX = (640.0f - fHUDWidth) / 2.0f;
 
-    fMouseLimitX = fNewHUDWidth;
-    fVideoQuadWidth = fNewHUDWidth;
-    fVideoUVScale = fNewHUDWidth / 409920.00f;
+    fVideoQuadWidth = fHUDWidth;
+    fVideoUVScale = fHUDWidth / 409920.00f;
 
+    // Picture-in-Picture
     float fPiPCam = fHUDOffsetX + 45.0f;
     float fPiPFrame = fHUDOffsetX + 26.0f;
 
@@ -154,32 +150,45 @@ void Init()
 
     // APPLY PATCHES
 
-       // 3D Aspect Ratio
+    // 3D Aspect Ratio
     auto pattern_ar = hook::pattern("C7 44 24 6C AB AA AA 3F");
     if (!pattern_ar.empty()) {
         uintptr_t addr_ar1 = (uintptr_t)pattern_ar.get_first(4);
-        injector::WriteMemory(addr_ar1, fNewAspect, true);
+        injector::WriteMemory(addr_ar1, aspectRatio, true);
         spdlog::info("Patched 1st address of Aspect Ratio");
     }
 
     auto pattern_ar_1 = hook::pattern("C7 41 0C AB AA AA 3F");
     if (!pattern_ar_1.empty()) {
         uintptr_t addr_ar2 = (uintptr_t)pattern_ar_1.get_first(3);
-        injector::WriteMemory(addr_ar2, fNewAspect, true);
+        injector::WriteMemory(addr_ar2, aspectRatio, true);
         spdlog::info("Patched 2nd address of Aspect Ratio");
     }
 
-    // Mouse Limits
-    for (uintptr_t i = start; i < end; i += 4) {
-        uint32_t val = *(uint32_t*)i;
-        if (val == 0x44180000) { // 608.0
-            injector::WriteMemory(i, fMouseLimitX, true);
+    // Unlock Mouse Limits
+    
+        // Mouse X Limit
+        auto mouse_limit_x = hook::pattern("dd d8 c7 46 08 00 00 18 44");
+        if (!mouse_limit_x.empty()) {
+            injector::WriteMemory<float>(0x00794210, fHUDWidth, true);
+            injector::WriteMemory<float>(mouse_limit_x.get_first(5), fHUDWidth, true);
+            spdlog::info("Increased horizontal mouse limit");
         }
-        else if (val == 0x43E00000) { // 448.0
-            injector::WriteMemory(i, fMouseLimitY, true);
+    
+        // Mouse Y Limit
+        auto mouse_limit_y = hook::pattern("dd d8 c7 46 0c 00 00 e0 43");
+        if (!mouse_limit_y.empty()) {
+            injector::WriteMemory<float>(mouse_limit_y.get_first(5), fHUDHeight, true);
+            injector::WriteMemory<float>(0x00794214, fHUDHeight, true);
+            spdlog::info("Increased vertical mouse limit");
         }
-    }
-    spdlog::info("Patched Mouse Limits");
+
+        // Remove left side limit for mouse
+        auto mouse_limit_x_left = hook::pattern("7a 07 c7 46 08 00 00 00 00");
+        if (!mouse_limit_x_left.empty()) {
+            injector::MakeNOP(mouse_limit_x_left.get_first(2), 7, true);
+            spdlog::info("Unlocked left side for mouse");
+        }
 
     // PiP Frame & Camera
     auto pattern_pip_cam = hook::pattern("34 00 00 34 42");
@@ -237,7 +246,7 @@ void Init()
     }
     spdlog::info("Patched Video Scaler");
 
-    // 2D Unified Hook (Main HUD)
+    // Hook for HUD
     auto pattern_hud = hook::pattern("68 00 00 F0 43 68 00 00 20 44 6A 00 6A 00");
     if (!pattern_hud.empty()) {
         uintptr_t matchAddr = (uintptr_t)pattern_hud.get_first(0);
@@ -252,6 +261,18 @@ void Init()
     }
     else {
         spdlog::error("2D Hook Failed: Pattern not found.");
+    }
+
+    // Window resolution at startup
+
+    auto w_addr = hook::pattern("c7 45 4c 80 02 00 00 c7 45 50 e0 01 00 00");
+    if (!w_addr.empty())
+    {
+        injector::WriteMemory<int>(w_addr.get_first(3), fResX, true);
+
+        injector::WriteMemory<int>(w_addr.get_first(10), fResY, true);
+
+        spdlog::info("Fixed Window Resolution at Startup", fResX, fResY);
     }
 
     // Other overlay resolutions
