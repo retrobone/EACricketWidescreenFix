@@ -13,14 +13,11 @@
 
 using namespace injector;
 
-// GLOBAL VARIABLES
-
 // HUD & Aspect Ratio Variables
 float fHUDWidth = 640.0f;
 float fHUDHeight = 480.0f;
 float fHUDOffsetX = 0.0f;
 float fAspectRatio = 1.3333333f;
-
 
 // Video Logic
 float fVideoQuadWidth = 640.00f;
@@ -168,7 +165,7 @@ void Init()
     // Unlock Mouse Limits
     
         // Mouse X Limit
-        auto mouse_limit_x = hook::pattern("dd d8 c7 46 08 00 00 18 44");
+        auto mouse_limit_x = hook::pattern("DD D8 C7 46 08 00 00 18 44");
         if (!mouse_limit_x.empty()) {
             injector::WriteMemory<float>(0x00794210, fHUDWidth, true);
             injector::WriteMemory<float>(mouse_limit_x.get_first(5), fHUDWidth, true);
@@ -176,7 +173,7 @@ void Init()
         }
     
         // Mouse Y Limit
-        auto mouse_limit_y = hook::pattern("dd d8 c7 46 0c 00 00 e0 43");
+        auto mouse_limit_y = hook::pattern("DD D8 C7 46 0C 00 00 E0 43");
         if (!mouse_limit_y.empty()) {
             injector::WriteMemory<float>(mouse_limit_y.get_first(5), fHUDHeight, true);
             injector::WriteMemory<float>(0x00794214, fHUDHeight, true);
@@ -184,7 +181,7 @@ void Init()
         }
 
         // Remove left side limit for mouse
-        auto mouse_limit_x_left = hook::pattern("7a 07 c7 46 08 00 00 00 00");
+        auto mouse_limit_x_left = hook::pattern("7A 07 C7 46 08 00 00 00 00");
         if (!mouse_limit_x_left.empty()) {
             injector::MakeNOP(mouse_limit_x_left.get_first(2), 7, true);
             spdlog::info("Unlocked left side for mouse");
@@ -265,7 +262,7 @@ void Init()
 
     // Window resolution at startup
 
-    auto w_addr = hook::pattern("c7 45 4c 80 02 00 00 c7 45 50 e0 01 00 00");
+    auto w_addr = hook::pattern("C7 45 4C 80 02 00 00 C7 45 50 E0 01 00 00");
     if (!w_addr.empty())
     {
         injector::WriteMemory<int>(w_addr.get_first(3), fResX, true);
@@ -388,7 +385,7 @@ void Init()
 
     // Override Default Resolution 
 
-    auto pattern_res_force = hook::pattern("BF 80 02 00 00 89 78 30");
+    auto pattern_res_force = hook::pattern("BF 80 02 00 00 89 78 30 E8 CE 29 00 00 BE E0 01 00 00");
 
     if (!pattern_res_force.empty()) {
         uintptr_t addr = (uintptr_t)pattern_res_force.get_first(0);
