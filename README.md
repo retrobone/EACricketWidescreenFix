@@ -2,7 +2,7 @@
 
 Widescreen and resolution support for EA Cricket games on PC.
 
-<img alt="GitHub Downloads (all assets, all releases)" width="15%" src="https://img.shields.io/github/downloads/retrobone/EACricketWidescreenFix/total?logoSize=auto&label=Downloads&labelColor=darkred&color=white">
+<img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/retrobone/EACricketWidescreenFix/total?logoSize=auto&label=Downloads&labelColor=darkred&color=white">
 
 ## EA Cricket 2002
 ## EA Cricket 2004
