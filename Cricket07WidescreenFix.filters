@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{000BCD17-6C75-818E-B5B3-3234215D5FE3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{2839F3DC-1406-4EE8-3D1F-3C90294B8376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\hooking">
+      <UniqueIdentifier>{665C4EB9-5255-6D0B-7B87-529067DF4C17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="includes">
+      <UniqueIdentifier>{1CA10C65-086E-6770-3187-55181DB39CFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\hdbeefup.lab">
+      <UniqueIdentifier>{251CC6FC-917D-A30A-1AEB-E9BC864BDAC9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\external\hooking\Hooking.Patterns.h">
+      <Filter>external\hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\stdafx.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hdbeefup.lab\dllmain.h" />
+    <ClInclude Include="..\includes\Globals.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\WindowHooks.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\includes\HUDHooks.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\external\hooking\Hooking.Patterns.cpp">
+      <Filter>external\hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\stdafx.cpp">
+      <Filter>includes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\hdbeefup.lab\dllmain.cpp">
+      <Filter>source\hdbeefup.lab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\WindowHooks.cpp">
+      <Filter>includes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\HUDHooks.cpp">
+      <Filter>includes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Resources\VersionInfo.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
