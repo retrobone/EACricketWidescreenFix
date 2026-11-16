@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C5327ACF-B195-0974-5A1B-422A465DD5F6}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>hdbeefup.lab</RootNamespace>
+    <ProjectName>Cricket07WidescreenFix</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <VCToolsVersion>
+    </VCToolsVersion>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\scripts\</OutDir>
+    <IntDir>obj\Win32\Release\hdbeefup.lab\</IntDir>
+    <TargetName>Cricket07WidescreenFix</TargetName>
+    <TargetExt>.asi</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\data\hdbeefup.lab\scripts\</OutDir>
+    <IntDir>obj\Win32\Debug\hdbeefup.lab\</IntDir>
+    <TargetName>hdbeefup.lab</TargetName>
+    <TargetExt>.asi</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>rsc_CompanyName="";rsc_LegalCopyright="";rsc_FileVersion="1.0.0.0";rsc_ProductVersion="1.0.0.0";rsc_InternalName="";rsc_ProductName="";rsc_OriginalFilename="";rsc_FileDescription="";rsc_UpdateUrl="";NDEBUG;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\external\injector\include\;..\external\dxsdk\include;..\external\safetyhook\src;..\includes;..\external\hooking;..\external\inireader;..\external\spdlog\include;..\external\filewatch;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>-std:c++latest /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeaderOutputFile />
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>/Ycstdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>rsc_CompanyName=\"hdbeefup template\";rsc_LegalCopyright=\"hdbeefup template\";rsc_FileVersion=\"1.0.0.0\";rsc_ProductVersion=\"1.0.0.0\";rsc_InternalName=\"hdbeefup.lab\";rsc_ProductName=\"hdbeefup.lab\";rsc_OriginalFilename=\"hdbeefup.lab.asi\";rsc_FileDescription=\"https://github.com/hdbeefup\";rsc_UpdateUrl=\"https://github.com/hdbeefup\";NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\includes;..\external\hooking;..\external\injector\include;..\external\inireader;..\external\spdlog\include;..\external\filewatch;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>C:\Games\Decompilation\hdb-quickstart-template-main\includes;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\data\hdbeefup.lab\scripts\hdbeefup.lab.lib</ImportLibrary>
+      <AdditionalDependencies>psapi.lib;Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>6.1</MinimumRequiredVersion>
+      <LargeAddressAware>false</LargeAddressAware>
+    </Link>
+    <PostBuildEvent>
+      <Command>set "path=C:/Games/Gamer/scriptsscripts/"
+setlocal EnableDelayedExpansion
+set file=$(TargetPath)
+FOR %%i IN ("%file%") DO (
+set filename=%%~ni
+set fileextension=%%~xi
+set target=!path!!filename!!fileextension!
+if exist "!target!" copy /y "!file!" "!target!"
+)</Command>
+    </PostBuildEvent>
+    <BuildLog>
+      <Path>log\$(ProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>rsc_CompanyName="hdbeefup template";rsc_LegalCopyright="hdbeefup template";rsc_FileVersion="1.0.0.0";rsc_ProductVersion="1.0.0.0";rsc_InternalName="hdbeefup.lab";rsc_ProductName="hdbeefup.lab";rsc_OriginalFilename="hdbeefup.lab.asi";rsc_FileDescription="https://github.com/hdbeefup";rsc_UpdateUrl="https://github.com/hdbeefup";DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\includes;..\external\hooking;..\external\injector\include;..\external\inireader;..\external\spdlog\include;..\external\filewatch;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>-std:c++latest %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>rsc_CompanyName=\"hdbeefup template\";rsc_LegalCopyright=\"hdbeefup template\";rsc_FileVersion=\"1.0.0.0\";rsc_ProductVersion=\"1.0.0.0\";rsc_InternalName=\"hdbeefup.lab\";rsc_ProductName=\"hdbeefup.lab\";rsc_OriginalFilename=\"hdbeefup.lab.asi\";rsc_FileDescription=\"https://github.com/hdbeefup\";rsc_UpdateUrl=\"https://github.com/hdbeefup\";DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\includes;..\external\hooking;..\external\injector\include;..\external\inireader;..\external\spdlog\include;..\external\filewatch;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\data\hdbeefup.lab\scripts\hdbeefup.lab.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>set "path=C:/Games/Gamer/scriptsscripts/"
+setlocal EnableDelayedExpansion
+set file=$(TargetPath)
+FOR %%i IN ("%file%") DO (
+set filename=%%~ni
+set fileextension=%%~xi
+set target=!path!!filename!!fileextension!
+if exist "!target!" copy /y "!file!" "!target!"
+)</Command>
+    </PostBuildEvent>
+    <BuildLog>
+      <Path>log\$(ProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\external\hooking\Hooking.Patterns.h" />
+    <ClInclude Include="..\includes\Globals.h" />
+    <ClInclude Include="..\includes\HUDHooks.h" />
+    <ClInclude Include="..\includes\stdafx.h" />
+    <ClInclude Include="..\includes\WindowHooks.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\external\hooking\Hooking.Patterns.cpp" />
+    <ClCompile Include="..\includes\HUDHooks.cpp" />
+    <ClCompile Include="..\includes\stdafx.cpp" />
+    <ClCompile Include="..\includes\WindowHooks.cpp" />
+    <ClCompile Include="..\source\Cricket07WidescreenFix\dllmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Resources\VersionInfo.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
